@@ -45,7 +45,18 @@ export class ArticlesComponent implements OnInit {
             JSON.stringify(
                 this.dataService.getArticleData(this.selectedPublisher)
             )
-        );
+        ).map(el => {
+            const date = new Date(el.f_time);
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const day = date.getDate();
+            const hour = date.getHours() -2;
+            const minute = date.getMinutes();
+
+            el.f_time = Date.UTC(year, month, day, hour, minute)
+
+            return el;
+    })
 
         this.actualSelectedArticle = this.originalArticles[0];
         this.articles = this.dataService
@@ -55,7 +66,7 @@ export class ArticlesComponent implements OnInit {
                 const year = date.getFullYear();
                 const month = date.getMonth();
                 const day = date.getDate();
-                const hour = date.getHours();
+                const hour = date.getHours() - 1;
                 const minute = date.getMinutes();
 
                 return {
