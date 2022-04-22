@@ -1,0 +1,81 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+        <!-- Content-->
+        <div
+            class="border-2 border-gray-300 rounded-2xl mat-elevation-z8 bg-card p-4"
+        >
+            <div class="flex w-full justify-center items-center">
+                <mat-form-field appearance="outline" class="w-1/4">
+                    <mat-label>Select a publisher</mat-label>
+                    <mat-select
+                        (selectionChange)="initOptions()"
+                        [(ngModel)]="selectedPublisher"
+                        name="publishersleect"
+                    >
+                        <mat-option
+                            *ngFor="let publisher of publishers"
+                            [value]="publisher"
+                        >
+                            {{ publisher }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="flex w-full">
+                <div
+                    class="w-full h-[800px] flex justify-center"
+                    id="container"
+                >
+                    <highcharts-chart
+                        [Highcharts]="highCharts"
+                        [options]="options"
+                    ></highcharts-chart>
+                </div>
+                <div class="w-full flex justify-center items-center">
+                    <div
+                        class="w-full p-4 pt-0 text-4xl flex justify-center items-center"
+                    >
+                        <div
+                            class="m-1 mt-0 p-3 pt-0 rounded-md border-2 border-slate-500 text-xl w-full"
+                        >
+                            <div>
+                                <div class="flex w-full flex-col py-3">
+                                    <div class="w-full font-bold text-center">
+                                        Title
+                                    </div>
+                                    <div class="w-full text-center">
+                                        {{ actualSelectedArticle.title }}
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                            <div>
+                                <div class="flex w-full py-3 flex-col">
+                                    <div class="w-full font-bold text-center">
+                                        Date
+                                    </div>
+                                    <div class="w-full text-center">
+                                        {{
+                                            actualSelectedArticle.f_time
+                                                | date: "long"
+                                        }}
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                            <div>
+                                <div class="flex w-full py-3">
+                                    <div class="w-full text-center">
+                                        {{ actualSelectedArticle.origText }}
+                                    </div>
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

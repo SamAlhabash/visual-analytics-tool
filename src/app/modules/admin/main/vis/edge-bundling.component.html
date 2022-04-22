@@ -1,0 +1,530 @@
+<div class="flex flex-col flex-auto min-w-0">
+    <!-- Main -->
+    <div class="flex-auto p-6 sm:p-10">
+        <!-- Content-->
+        <div
+            class="border-2 border-gray-300 rounded-2xl mat-elevation-z8 bg-card p-4"
+        >
+            <div class="flex justify-center items-center w-full mb-5">
+                <mat-form-field appearance="outline" color="primary">
+                    <mat-label>Enter a date range</mat-label>
+                    <mat-date-range-input
+                        [formGroup]="dateRange"
+                        [rangePicker]="picker"
+                        [min]="minDate"
+                        [max]="maxDate"
+                    >
+                        <input
+                            matStartDate
+                            formControlName="start"
+                            placeholder="Start date"
+                            (dateChange)="handleDateChange()"
+                        />
+
+                        <input
+                            matEndDate
+                            formControlName="end"
+                            placeholder="End date"
+                            (dateChange)="handleDateChange()"
+                        />
+                    </mat-date-range-input>
+                    <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+                <!-- <mat-accordion class="ml-10">
+                    <mat-expansion-panel
+                        (opened)="panelOpenState = true"
+                        (closed)="panelOpenState = false"
+                    >
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <mat-icon class="mr-2">settings</mat-icon>
+                                Edge Bundling Settings
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+                        <p>I'm visible because I am open</p>
+                    </mat-expansion-panel>
+                </mat-accordion> -->
+            </div>
+            <div class="flex w-full">
+                <!-- Edge Bundling -->
+                <div class="flex flex-col w-full">
+                    <mat-accordion class="w-full">
+                        <mat-expansion-panel
+                            (opened)="panelOpenState = true"
+                            (closed)="panelOpenState = false"
+                        >
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    <mat-icon class="mr-2">settings</mat-icon>
+                                    Edge Bundling Settings
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <div class="w-full flex"></div>
+                            <div class="w-full">Tension:</div>
+                            <mat-slider
+                                class="example-margin"
+                                [max]="1"
+                                [min]="0.1"
+                                [step]="0.1"
+                                [(ngModel)]="tension"
+                                aria-labelledby="example-name-label"
+                                [thumbLabel]="true"
+                                class="w-full"
+                                (change)="handleTensionChange()"
+                            >
+                            </mat-slider>
+                            <div class="w-full">Font-size:</div>
+                            <mat-slider
+                                class="example-margin"
+                                [max]="25"
+                                [min]="4"
+                                [step]="1"
+                                [(ngModel)]="fontSize"
+                                aria-labelledby="example-name-label"
+                                [thumbLabel]="true"
+                                class="w-full"
+                                (change)="handleTensionChange()"
+                            >
+                            </mat-slider>
+                            <div class="w-full">Width:</div>
+                            <mat-slider
+                                class="example-margin"
+                                [max]="2000"
+                                [min]="300"
+                                [step]="10"
+                                [(ngModel)]="width"
+                                aria-labelledby="example-name-label"
+                                [thumbLabel]="true"
+                                class="w-full"
+                                (change)="handleTensionChange()"
+                            >
+                            </mat-slider>
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                    <div class="w-full p-5" id="svg">
+                        <div id="edgelegend" class="flex flex-col p-3 w-full">
+                            <div
+                                *ngFor="let dept of depts"
+                                [ngStyle]="{
+                                    color: d3.schemeCategory10[
+                                        depts.indexOf(dept)
+                                    ]
+                                }"
+                            >
+                                {{ dept }}
+                            </div>
+                            <div class="font-bold text-[#f00] mt-5">
+                                Recieved
+                            </div>
+                            <div class="font-bold text-[#00f]">Sent</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Edge Bundling End -->
+                <!-- Bar Chart Start -->
+                <div class="w-full">
+                    <div
+                        *ngIf="!selectedEmployee"
+                        class="h-full flex justify-center items-center text-4xl"
+                    >
+                        Select an Employee to View The Frequency of Words in
+                        Emails.
+                    </div>
+                    <ngx-charts-bar-horizontal
+                        *ngIf="selectedEmployee"
+                        [results]="countObj"
+                        [gradient]="false"
+                        [xAxis]="true"
+                        [yAxis]="true"
+                        [legend]="false"
+                        [showXAxisLabel]="true"
+                        [showYAxisLabel]="true"
+                        [xAxisLabel]="'Frequency'"
+                        [yAxisLabel]="'Words'"
+                        [scheme]="colorScheme"
+                    >
+                    </ngx-charts-bar-horizontal>
+                </div>
+                <!-- Bar Chart End -->
+            </div>
+            <mat-divider></mat-divider>
+            <div class="flex w-full max-h-[1000px]">
+                <!-- Table Start-->
+                <div class="w-full overflow-y-auto">
+                    <div
+                        *ngIf="!selectedEmployee"
+                        class="h-full flex justify-center items-center text-4xl"
+                    >
+                        Select an Employee to View their Email Data.
+                    </div>
+                    <div *ngIf="selectedEmployee" class="w-full max-w-full">
+                        <table
+                            mat-table
+                            [dataSource]="dataSource"
+                            matSort
+                            class="w-full max-w-[834px]"
+                        >
+                            <!-- Status Column -->
+                            <ng-container matColumnDef="Status">
+                                <th
+                                    mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header
+                                    class="ccc"
+                                >
+                                    Status
+                                </th>
+                                <td
+                                    mat-cell
+                                    *matCellDef="let row"
+                                    class="text-center px-2"
+                                >
+                                    {{ row.Status }}
+                                </td>
+                            </ng-container>
+
+                            <!-- From Column -->
+                            <ng-container matColumnDef="From">
+                                <th
+                                    mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header
+                                >
+                                    From
+                                </th>
+                                <td mat-cell *matCellDef="let row">
+                                    {{ row.From }}
+                                </td>
+                            </ng-container>
+
+                            <!-- To Column -->
+                            <ng-container matColumnDef="To">
+                                <th
+                                    mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header
+                                    class="ccc"
+                                >
+                                    To
+                                </th>
+                                <td
+                                    mat-cell
+                                    *matCellDef="let row"
+                                    class="text-center max-w-[300px] px-2"
+                                >
+                                    <div>
+                                        {{
+                                            !row.Selected ? row.To : row.ToLong
+                                        }}
+                                        <span
+                                            *ngIf="
+                                                !row.Selected &&
+                                                row.ToLong !== ''
+                                            "
+                                            class="text-blue-500 cursor-pointer"
+                                            (click)="
+                                                row.Selected = !row.Selected
+                                            "
+                                            >&nbsp; show more...</span
+                                        >
+                                        <span
+                                            *ngIf="row.Selected"
+                                            class="text-blue-500 cursor-pointer"
+                                            (click)="
+                                                row.Selected = !row.Selected
+                                            "
+                                            >&nbsp; show less...</span
+                                        >
+                                    </div>
+                                </td>
+                            </ng-container>
+
+                            <!-- Date Column -->
+                            <ng-container matColumnDef="Date">
+                                <th
+                                    mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header
+                                    class="ccc"
+                                >
+                                    Date
+                                </th>
+                                <td
+                                    mat-cell
+                                    *matCellDef="let row"
+                                    class="text-center px-2"
+                                >
+                                    {{ row.Date | date: "short" }}
+                                </td>
+                            </ng-container>
+
+                            <!-- Subject Column -->
+                            <ng-container matColumnDef="Subject">
+                                <th
+                                    mat-header-cell
+                                    *matHeaderCellDef
+                                    mat-sort-header
+                                    class="ccc"
+                                >
+                                    Subject
+                                </th>
+                                <td
+                                    mat-cell
+                                    *matCellDef="let row"
+                                    class="text-center"
+                                >
+                                    {{ row.Subject }}
+                                </td>
+                            </ng-container>
+
+                            <tr
+                                mat-header-row
+                                *matHeaderRowDef="displayedColumns"
+                            ></tr>
+                            <tr
+                                mat-row
+                                *matRowDef="let row; columns: displayedColumns"
+                            ></tr>
+
+                            <!-- Row shown when there is no matching data. -->
+                        </table>
+
+                        <mat-paginator
+                            [pageSizeOptions]="[5, 10, 25, 30, 40, 50, 100]"
+                            aria-label="Select page of users"
+                            [pageSize]="10"
+                        ></mat-paginator>
+                    </div>
+                </div>
+                <!-- Table End-->
+                <!-- Personal Details Start-->
+                <div
+                    class="w-full p-4 pt-0 text-4xl flex justify-center items-center"
+                >
+                    <div
+                        *ngIf="!selectedEmployee"
+                        class="h-full flex justify-center items-center mt-[16px]"
+                    >
+                        Select an Employee to View their Personal Data.
+                    </div>
+                    <div
+                        class="m-1 mt-0 p-3 pt-0 rounded-md border-2 border-slate-500 text-xl w-full"
+                        *ngIf="selectedEmployee"
+                    >
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Name:</div>
+                                <div class="w-full">
+                                    {{ selectedEmployee.FirstName }}
+                                    {{ selectedEmployee.LastName }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Birth Date:</div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.BirthDate
+                                            | date: "MM/dd/yyyy"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Birth Country:</div>
+                                <div class="w-full">
+                                    {{ selectedEmployee.BirthCountry }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Email:</div>
+                                <div class="w-full">
+                                    {{ selectedEmployee.EmailAddress }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Gender:</div>
+                                <div class="w-full">
+                                    {{ selectedEmployee.Gender }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Employment Title:</div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.CurrentEmploymentTitle
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Employment Type:</div>
+                                <div class="w-full">
+                                    {{ selectedEmployee.CurrentEmploymentType }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Employment Start Date:</div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.CurrentEmploymentStartDate
+                                            | date: "MM/dd/yyyy"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Citizinship Basis:</div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.CitizinshipBasis
+                                            ? selectedEmployee.CitizinshipBasis
+                                            : "N/A"
+                                    }}
+                                </div>
+                                <mat-divider></mat-divider>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Citizinship Country:</div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.CitizinshipCountry
+                                            ? selectedEmployee.CitizinshipCountry
+                                            : "N/A"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">
+                                    Citizinship Start Date:
+                                </div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.CitizenshipStartDate
+                                            | date: "MM/dd/yyyy"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">
+                                    Military Discharge Type:
+                                </div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.MilitaryDischargeType
+                                            ? selectedEmployee.MilitaryDischargeType
+                                            : "N/A"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">
+                                    Military Service Branch:
+                                </div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.MilitaryServiceBranch
+                                            ? selectedEmployee.MilitaryServiceBranch
+                                            : "N/A"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">
+                                    Military Discharge Date:
+                                </div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.MilitaryDischargeDate
+                                            | date: "MM/dd/yyyy"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Passport Country:</div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.PassportCountry
+                                            ? selectedEmployee.PassportCountry
+                                            : "N/A"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">Passport Issue Date:</div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.PassportIssueDate
+                                            | date: "MM/dd/yyyy"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div>
+                            <div class="flex w-full py-3">
+                                <div class="w-full">
+                                    Passport Expiration Date:
+                                </div>
+                                <div class="w-full">
+                                    {{
+                                        selectedEmployee.PassportExpirationDate
+                                            | date: "MM/dd/yyyy"
+                                    }}
+                                </div>
+                            </div>
+                            <mat-divider></mat-divider>
+                        </div>
+                    </div>
+                </div>
+                <!-- Personal Details End-->
+            </div>
+        </div>
+    </div>
+</div>
